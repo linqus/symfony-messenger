@@ -12,6 +12,11 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20190502173230 extends AbstractMigration
 {
+    public function isTransactional(): bool
+    {
+        return false;
+    }
+    
     public function getDescription() : string
     {
         return '';
@@ -20,7 +25,7 @@ final class Version20190502173230 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf($this->connection->getDatabasePlatform()->getName()  !== 'mysql', 'Migration can only be executed safely on \'mysql\'. '.$this->connection->getDatabasePlatform()->getName()." given");
 
         $this->addSql('CREATE TABLE image_post (id INT AUTO_INCREMENT NOT NULL, filename VARCHAR(255) NOT NULL, original_filename VARCHAR(255) NOT NULL, ponka_added_at DATETIME DEFAULT NULL, created_at DATETIME NOT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
     }
