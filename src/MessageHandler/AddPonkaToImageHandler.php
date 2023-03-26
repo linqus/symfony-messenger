@@ -2,14 +2,19 @@
 
 namespace App\MessageHandler;
 
+use App\Entity\ImagePost;
 use App\Message\AddPonkaToImage;
 use App\Photo\PhotoFileManager;
 use App\Photo\PhotoPonkaficator;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Messenger\Handler\MessageHandlerInterface;
 
-class AddPonkaToImageHandler implements MessageHandlerInterface
+class AddPonkaToImageHandler implements MessageHandlerInterface, LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     private $ponkaficator;
     private $photoManager;
     private $entityManager;
@@ -23,8 +28,17 @@ class AddPonkaToImageHandler implements MessageHandlerInterface
 
     public function __invoke(AddPonkaToImage $addPonkaToImage)
     {
+        $imagePost = $this->entityManager->getRepository(ImagePost::class)->find($addPonkaToImage->getImagePostId());
 
-        $imagePost = $addPonkaToImage->getImagePost();
+        if (!$imagePost) {
+
+            if ($this->logger) {
+                $this->logger->alert(sprintf('imagepost of id:%d not found, skipping',$addPonkaToImage->getImagePostId()));
+            };
+
+            return;
+        };
+
         $updatedContents = $this->ponkaficator->ponkafy(
             $this->photoManager->read($imagePost->getFilename())
         );

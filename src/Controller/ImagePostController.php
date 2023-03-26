@@ -59,7 +59,7 @@ class ImagePostController extends AbstractController
         $entityManager->flush();
 
 
-        $message = new AddPonkaToImage($imagePost);
+        $message = new AddPonkaToImage($imagePost->getId());
         $messageBus->dispatch($message);
 
         return $this->toJson($imagePost, 201);
@@ -71,7 +71,7 @@ class ImagePostController extends AbstractController
     public function delete(ImagePost $imagePost, MessageBusInterface $messageBus)
     {
 
-        $message = new DeleteImagePost($imagePost);
+        $message = new DeleteImagePost($imagePost->getId());
         $messageBus->dispatch($message);
 
         return new Response(null, 204);
